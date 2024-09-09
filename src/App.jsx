@@ -21,31 +21,37 @@ function App() {
     setPage((prevPage) => prevPage - 1);
   };
   const onSubmit = (data) => {
-    console.log("Form Data: ", data);
+    if (page < 2) {
+      setPage((prevPage) => prevPage + 1);
+    } else {
+      console.log("Form Data: ", data);
 
-    // Create FormData to handle image file uploads
-    const formData = new FormData();
-    formData.append("age", data.age);
-    formData.append("gender", data.gender);
-    formData.append("skinType", data.skinType);
-    const selectedIssues = Object.keys(data.skinHealthIssues).filter(
-      (issue) => data.skinHealthIssues[issue]
-    );
-    formData.append("skinHealthIssues", selectedIssues.join(", "));
-    formData.append("image", data.image[0]); // Handling the file input
-    // Append details for each selected skin health issue
-    ["acne", "redness", "pigmentation", "dryness", "oiliness"].forEach(
-      (issue) => {
-        if (data[`${issue}Details`]) {
-          formData.append(
-            `${issue}Details`,
-            JSON.stringify(data[`${issue}Details`])
-          );
+      // Create FormData to handle image file uploads
+      const formData = new FormData();
+      formData.append("age", data.age);
+      formData.append("gender", data.gender);
+      formData.append("dailySunExposure", data.dailySunExposure);
+      formData.append("skinType", data.skinType);
+      const selectedIssues = Object.keys(data.skinHealthIssues).filter(
+        (issue) => data.skinHealthIssues[issue]
+      );
+      formData.append("skinHealthIssues", selectedIssues.join(", "));
+      formData.append("image", data.image[0]); // Handling the file input
+      // Append details for each selected skin health issue
+      ["acne", "redness", "pigmentation", "dryness", "oiliness"].forEach(
+        (issue) => {
+          if (data[`${issue}Details`]) {
+            formData.append(
+              `${issue}Details`,
+              JSON.stringify(data[`${issue}Details`])
+            );
+          }
         }
-      }
-    );
-    // You can now send this formData to your backend using Axios or fetch
-    console.log("FormData with file: ", formData.get("image"));
+      );
+      // You can now send this formData to your backend using Axios or fetch
+      console.log("FormData with file: ", formData.get("image"));
+    }
+    
   };
 
   return (
@@ -87,6 +93,19 @@ function App() {
                 <option value="Dry Skin">Dry Skin</option>
                 <option value="Oily Skin">Oily Skin</option>
                 <option value="Normal Skin">Normal Skin</option>
+              </select>
+              {errors.skinType && <span>This field is required</span>}
+            </div>
+
+            {/* Drop-Down Menu Question */}
+            <div>
+              <label>Daily Sun Exposure:</label>
+              <select {...register("dailySunExposure", { required: true })}>
+                <option value="">Select...</option>
+                <option value="none">None</option>
+                <option value="mild">Mild</option>
+                <option value="moderate">Moderate</option>
+                <option value="severe">Severe</option>
               </select>
               {errors.skinType && <span>This field is required</span>}
             </div>
@@ -134,9 +153,17 @@ function App() {
                 />
                 <label>oiliness</label>
               </div>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("skinHealthIssues", { required: true })}
+                  value="none"
+                />
+                <label>none</label>
+              </div>
               {errors.skinHealthIssues && <span>This field is required</span>}
             </div>
-            <button type="button" onClick={() => setPage(2)}>
+            <button type="submit">
               Next
             </button>
           </div>
@@ -357,11 +384,8 @@ function App() {
 
             {/* Submit Button */}
             <button type="submit">Submit</button>
-            <button type="button" onClick={() => setPage(1)}>
+            <button type="button" onClick={handlePrevious}>
               Previous
-            </button>
-            <button type="button" onClick={() => setPage(3)}>
-              Next
             </button>
           </div>
         )}
