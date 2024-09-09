@@ -13,6 +13,13 @@ function App() {
   const [page, setPage] = useState(1); // State to track the current page
   const selectedSkinHealthIssues = watch("skinHealthIssues", []);
 
+  const handleNext = (data) => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  const handlePrevious = () => {
+    setPage((prevPage) => prevPage - 1);
+  };
   const onSubmit = (data) => {
     console.log("Form Data: ", data);
 
@@ -73,7 +80,7 @@ function App() {
 
             {/* Drop-Down Menu Question */}
             <div>
-              <label>Skin Type:</label>س
+              <label>Skin Type:</label>
               <select {...register("skinType", { required: true })}>
                 <option value="">Select...</option>
                 <option value="Combination Skin">Combination Skin</option>
@@ -135,7 +142,7 @@ function App() {
           </div>
         )}
 
-        {page === 1 && (
+        {page === 2 && (
           <div>
             {/* Image Upload */}
             <div>
@@ -190,43 +197,161 @@ function App() {
 
             {selectedSkinHealthIssues.includes("redness") && (
               <div>
-                <label>Describe your redness issues:</label>
-                <textarea
-                  {...register("rednessDetails", { required: true })}
-                ></textarea>
-                {errors.rednessDetails && <span>This field is required</span>}
+                <h3>Describe your redness issues</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>None</th>
+                      <th>Mild</th>
+                      <th>Moderate</th>
+                      <th>Severe</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                      (area) => (
+                        <tr key={area}>
+                          <td>{area}</td>
+                          {["None", "Mild", "Moderate", "Severe"].map(
+                            (severity) => (
+                              <td key={severity}>
+                                <input
+                                  type="radio"
+                                  {...register(
+                                    `rednessDetails.${area.toLowerCase()}`,
+                                    { required: true }
+                                  )}
+                                  value={severity}
+                                />
+                              </td>
+                            )
+                          )}
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
 
             {selectedSkinHealthIssues.includes("pigmentation") && (
               <div>
-                <label>Describe your pigmentation issues:</label>
-                <textarea
-                  {...register("pigmentationDetails", { required: true })}
-                ></textarea>
-                {errors.pigmentationDetails && (
-                  <span>This field is required</span>
-                )}
+                <h3>Describe your pigmentation issues</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>None</th>
+                      <th>Mild</th>
+                      <th>Moderate</th>
+                      <th>Severe</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                      (area) => (
+                        <tr key={area}>
+                          <td>{area}</td>
+                          {["None", "Mild", "Moderate", "Severe"].map(
+                            (severity) => (
+                              <td key={severity}>
+                                <input
+                                  type="radio"
+                                  {...register(
+                                    `pigmentationDetails.${area.toLowerCase()}`,
+                                    { required: true }
+                                  )}
+                                  value={severity}
+                                />
+                              </td>
+                            )
+                          )}
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
 
             {selectedSkinHealthIssues.includes("dryness") && (
               <div>
-                <label>Describe your dryness issues:</label>
-                <textarea
-                  {...register("drynessDetails", { required: true })}
-                ></textarea>
-                {errors.drynessDetails && <span>This field is required</span>}
+                <h3>Describe your dryness issues:</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>None</th>
+                      <th>Mild</th>
+                      <th>Moderate</th>
+                      <th>Severe</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                      (area) => (
+                        <tr key={area}>
+                          <td>{area}</td>
+                          {["None", "Mild", "Moderate", "Severe"].map(
+                            (severity) => (
+                              <td key={severity}>
+                                <input
+                                  type="radio"
+                                  {...register(
+                                    `drynessDetails.${area.toLowerCase()}`,
+                                    { required: true }
+                                  )}
+                                  value={severity}
+                                />
+                              </td>
+                            )
+                          )}
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
 
             {selectedSkinHealthIssues.includes("oiliness") && (
               <div>
-                <label>Describe your oiliness issues:</label>
-                <textarea
-                  {...register("oilinessDetails", { required: true })}
-                ></textarea>
-                {errors.oilinessDetails && <span>This field is required</span>}
+                <h3>Describe your oiliness issues:</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>None</th>
+                      <th>Mild</th>
+                      <th>Moderate</th>
+                      <th>Severe</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                      (area) => (
+                        <tr key={area}>
+                          <td>{area}</td>
+                          {["None", "Mild", "Moderate", "Severe"].map(
+                            (severity) => (
+                              <td key={severity}>
+                                <input
+                                  type="radio"
+                                  {...register(
+                                    `oilinessDetails.${area.toLowerCase()}`,
+                                    { required: true }
+                                  )}
+                                  value={severity}
+                                />
+                              </td>
+                            )
+                          )}
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
 
