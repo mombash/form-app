@@ -1,0 +1,52 @@
+#root {
+  width: 1280px;
+  height: 100vh;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.App {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 7.5% 85% 7.5%;
+  grid-template-rows: 15% 85%; 
+  grid-template-areas: 
+  "side top side"
+  "side middle side";
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  grid-area: "middle";
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  align-items: center;
+}
+
+input {
+  margin: 10px;
+  padding: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+h2 {
+  grid-area: "top";
+}
