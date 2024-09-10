@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import React from "react";
 // import "./App.css";
+import { collection, addDoc } from "firebase/firestore"; // Import necessary functions
+import { db } from "./Firebase"; // Import db from Firebase
 
 function App() {
   const {
@@ -20,7 +22,7 @@ function App() {
   const handlePrevious = () => {
     setPage((prevPage) => prevPage - 1);
   };
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (page < 3) {
       setPage((prevPage) => prevPage + 1);
     } else {
@@ -36,7 +38,11 @@ function App() {
         (issue) => data.skinHealthIssues[issue]
       );
       formData.append("skinHealthIssues", selectedIssues.join(", "));
-      formData.append("image", data.image[0]); // Handling the file input
+      const selectedUnderEyeIssues = Object.keys(data.underEyeIssues).filter(
+        (issue) => data.underEyeIssues[issue]
+      );
+      formData.append("underEyeIssues", selectedUnderEyeIssues.join(", "));
+      // formData.append("image", data.image[0]); // Handling the file input
       // Append details for each selected skin health issue
       ["acne", "redness", "pigmentation", "dryness", "oiliness"].forEach(
         (issue) => {
@@ -48,8 +54,48 @@ function App() {
           }
         }
       );
+/*       // Append details for each selected under eye issue
+      ["wrinkles", "milia", "dryness", "darkCircles", "puffiness"].forEach(
+        (issue) => {
+          if (data[`${issue}Details`]) {
+            formData.append(
+              `${issue}Details`,
+              JSON.stringify(data[`${issue}Details`])
+            );
+          }
+        }
+      ); */
       // You can now send this formData to your backend using Axios or fetch
-      console.log("FormData with file: ", formData.get("image"));
+      // console.log("FormData with file: ", formData.get("image"));
+
+      const dataObject = {
+        age : data.age,
+        gender : data.gender,
+        dailySunExposure : data.dailySunExposure,
+        skinType : data.skinType,
+        skinHealthIssues : selectedIssues,
+        underEyeIssues : selectedUnderEyeIssues,
+        // image : data.image[0],
+        // wrinkleDetails : data.wrinkleDetails,
+        // miliaDetails : data.miliaDetails,
+        // drynessDetails : data.drynessDetails,
+        // darkCirclesDetails : data.darkCirclesDetails,
+        // puffinessDetails : data.puffinessDetails,
+        ...(data.acneDetails !== undefined && data.acneDetails !== null ? { acneDetails: data.acneDetails } : {}),
+        ...(data.rednessDetails !== undefined && data.rednessDetails !== null ? { rednessDetails: data.rednessDetails } : {}),
+        ...(data.pigmentationDetails !== undefined && data.pigmentationDetails !== null ? { pigmentationDetails: data.pigmentationDetails } : {}),
+        ...(data.drynessDetails !== undefined && data.drynessDetails !== null ? { drynessDetails: data.drynessDetails } : {}),
+        ...(data.oilinessDetails !== undefined && data.oilinessDetails !== null ? { oilinessDetails: data.oilinessDetails } : {}),
+      };
+
+      try {
+        const docRef = await addDoc(collection(db, "objects"), {
+          dataObject,
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }      
     }
   };
 
@@ -441,37 +487,38 @@ function App() {
         {page === 3 && (
           <div>
             <h2>Page 3</h2>
-            {/* Image Upload */}
-            <div>
+
+{/*             <div>
               <label>Full face close up selfie:</label>
               <input type="file" {...register("image", { required: true })} />
               {errors.image && <span>This field is required</span>}
             </div>
+
             <p>Upload high quality close-ups from different segments</p>
-            {/* Image Upload */}
             <div>
               <label>Forehead:</label>
               <input type="file" {...register("image", { required: true })} />
               {errors.image && <span>This field is required</span>}
             </div>
-            {/* Image Upload */}
+
             <div>
               <label>Chin:</label>
               <input type="file" {...register("image", { required: true })} />
               {errors.image && <span>This field is required</span>}
             </div>
-            {/* Image Upload */}
+
             <div>
               <label>Left Cheeks:</label>
               <input type="file" {...register("image", { required: true })} />
               {errors.image && <span>This field is required</span>}
             </div>
-            {/* Image Upload */}
+
             <div>
               <label>Right Cheeks:</label>
               <input type="file" {...register("image", { required: true })} />
               {errors.image && <span>This field is required</span>}
             </div>
+             */}
             <button type="button" onClick={handlePrevious}>
               Previous
             </button>
