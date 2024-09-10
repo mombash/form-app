@@ -21,7 +21,7 @@ function App() {
     setPage((prevPage) => prevPage - 1);
   };
   const onSubmit = (data) => {
-    if (page < 2) {
+    if (page < 3) {
       setPage((prevPage) => prevPage + 1);
     } else {
       console.log("Form Data: ", data);
@@ -51,7 +51,6 @@ function App() {
       // You can now send this formData to your backend using Axios or fetch
       console.log("FormData with file: ", formData.get("image"));
     }
-    
   };
 
   return (
@@ -60,6 +59,7 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         {page === 1 && (
           <div>
+            <h2>Page 1</h2>
             {/* Age Field */}
             <div>
               <label>Age:</label>
@@ -83,7 +83,9 @@ function App() {
               </select>
               {errors.gender && <span>This field is required</span>}
             </div>
-
+            <div>
+              <img src="./src/assets/skin-type.png" alt="Skin Type" />
+            </div>
             {/* Drop-Down Menu Question */}
             <div>
               <label>Skin Type:</label>
@@ -163,21 +165,68 @@ function App() {
               </div>
               {errors.skinHealthIssues && <span>This field is required</span>}
             </div>
-            <button type="submit">
-              Next
-            </button>
+
+            {/* Multiple Choice Question for Under Eye Issues */}
+            <div>
+              <label>Under Eye Issues:</label>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("underEyeIssues", { required: true })}
+                  value="wrinkles"
+                />
+                <label>wrinkles</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("underEyeIssues", { required: true })}
+                  value="milia"
+                />
+                <label>milia</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("underEyeIssues", { required: true })}
+                  value="dryness"
+                />
+                <label>dryness</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("underEyeIssues", { required: true })}
+                  value="darkCircles"
+                />
+                <label>dark circles</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("underEyeIssues", { required: true })}
+                  value="puffiness"
+                />
+                <label>puffiness</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  {...register("underEyeIssues", { required: true })}
+                  value="none"
+                />
+                <label>none</label>
+              </div>
+              {errors.underEyeIssues && <span>This field is required</span>}
+            </div>
+
+            <button type="submit">Next</button>
           </div>
         )}
 
         {page === 2 && (
           <div>
-            {/* Image Upload */}
-            <div>
-              <label>Upload Image:</label>
-              <input type="file" {...register("image", { required: true })} />
-              {errors.image && <span>This field is required</span>}
-            </div>
-
+            <h2>Page 2</h2>
             {/* Conditionally render additional questions for each skin health issue */}
             {selectedSkinHealthIssues.includes("acne") && (
               <div>
@@ -383,10 +432,50 @@ function App() {
             )}
 
             {/* Submit Button */}
-            <button type="submit">Submit</button>
+            <button type="submit">Next</button>
             <button type="button" onClick={handlePrevious}>
               Previous
             </button>
+          </div>
+        )}
+        {page === 3 && (
+          <div>
+            <h2>Page 3</h2>
+            {/* Image Upload */}
+            <div>
+              <label>Full face close up selfie:</label>
+              <input type="file" {...register("image", { required: true })} />
+              {errors.image && <span>This field is required</span>}
+            </div>
+            <p>Upload high quality close-ups from different segments</p>
+            {/* Image Upload */}
+            <div>
+              <label>Forehead:</label>
+              <input type="file" {...register("image", { required: true })} />
+              {errors.image && <span>This field is required</span>}
+            </div>
+            {/* Image Upload */}
+            <div>
+              <label>Chin:</label>
+              <input type="file" {...register("image", { required: true })} />
+              {errors.image && <span>This field is required</span>}
+            </div>
+            {/* Image Upload */}
+            <div>
+              <label>Left Cheeks:</label>
+              <input type="file" {...register("image", { required: true })} />
+              {errors.image && <span>This field is required</span>}
+            </div>
+            {/* Image Upload */}
+            <div>
+              <label>Right Cheeks:</label>
+              <input type="file" {...register("image", { required: true })} />
+              {errors.image && <span>This field is required</span>}
+            </div>
+            <button type="button" onClick={handlePrevious}>
+              Previous
+            </button>
+            <button type="submit">Submit</button>
           </div>
         )}
       </form>
