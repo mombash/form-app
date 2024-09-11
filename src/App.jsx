@@ -4,6 +4,31 @@ import React from "react";
 // import "./App.css";
 import { collection, addDoc } from "firebase/firestore"; // Import necessary functions
 import { db } from "./Firebase"; // Import db from Firebase
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "./Firebase";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import Checkbox from "@mui/material/Checkbox";
+import FormGroup from "@mui/material/FormGroup";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 
 function App() {
   const {
@@ -22,11 +47,25 @@ function App() {
   const handlePrevious = () => {
     setPage((prevPage) => prevPage - 1);
   };
+
+  const uploadImage = async (file) => {
+    if (!file) return null;
+    const storageRef = ref(storage, `images/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  };
+
   const onSubmit = async (data) => {
     if (page < 3) {
       setPage((prevPage) => prevPage + 1);
     } else {
       console.log("Form Data: ", data);
+
+      // const imageFiles = Array.from(data.images);
+      // const imageUrls = await Promise.all(
+      //   imageFiles.map(async (image) => await uploadImage(image))
+      // );
 
       // Create FormData to handle image file uploads
       const formData = new FormData();
@@ -54,7 +93,7 @@ function App() {
           }
         }
       );
-/*       // Append details for each selected under eye issue
+      /*       // Append details for each selected under eye issue
       ["wrinkles", "milia", "dryness", "darkCircles", "puffiness"].forEach(
         (issue) => {
           if (data[`${issue}Details`]) {
@@ -69,23 +108,34 @@ function App() {
       // console.log("FormData with file: ", formData.get("image"));
 
       const dataObject = {
-        age : data.age,
-        gender : data.gender,
-        dailySunExposure : data.dailySunExposure,
-        skinType : data.skinType,
-        skinHealthIssues : selectedIssues,
-        underEyeIssues : selectedUnderEyeIssues,
-        // image : data.image[0],
+        age: data.age,
+        gender: data.gender,
+        dailySunExposure: data.dailySunExposure,
+        skinType: data.skinType,
+        skinHealthIssues: selectedIssues,
+        underEyeIssues: selectedUnderEyeIssues,
+        // images: imageUrls, // Include the image URLs here
         // wrinkleDetails : data.wrinkleDetails,
         // miliaDetails : data.miliaDetails,
         // drynessDetails : data.drynessDetails,
         // darkCirclesDetails : data.darkCirclesDetails,
         // puffinessDetails : data.puffinessDetails,
-        ...(data.acneDetails !== undefined && data.acneDetails !== null ? { acneDetails: data.acneDetails } : {}),
-        ...(data.rednessDetails !== undefined && data.rednessDetails !== null ? { rednessDetails: data.rednessDetails } : {}),
-        ...(data.pigmentationDetails !== undefined && data.pigmentationDetails !== null ? { pigmentationDetails: data.pigmentationDetails } : {}),
-        ...(data.drynessDetails !== undefined && data.drynessDetails !== null ? { drynessDetails: data.drynessDetails } : {}),
-        ...(data.oilinessDetails !== undefined && data.oilinessDetails !== null ? { oilinessDetails: data.oilinessDetails } : {}),
+        ...(data.acneDetails !== undefined && data.acneDetails !== null
+          ? { acneDetails: data.acneDetails }
+          : {}),
+        ...(data.rednessDetails !== undefined && data.rednessDetails !== null
+          ? { rednessDetails: data.rednessDetails }
+          : {}),
+        ...(data.pigmentationDetails !== undefined &&
+        data.pigmentationDetails !== null
+          ? { pigmentationDetails: data.pigmentationDetails }
+          : {}),
+        ...(data.drynessDetails !== undefined && data.drynessDetails !== null
+          ? { drynessDetails: data.drynessDetails }
+          : {}),
+        ...(data.oilinessDetails !== undefined && data.oilinessDetails !== null
+          ? { oilinessDetails: data.oilinessDetails }
+          : {}),
       };
 
       try {
@@ -95,438 +145,531 @@ function App() {
         console.log("Document written with ID: ", docRef.id);
       } catch (e) {
         console.error("Error adding document: ", e);
-      }      
+      }
     }
   };
 
   return (
-    <div className="App">
-      <h2>Submit Your Details</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {page === 1 && (
-          <div>
-            <h2>Page 1</h2>
-            {/* Age Field */}
-            <div>
-              <label>Age:</label>
-              <input
-                {...register("age", { required: true })}
-                placeholder="Age"
-              />
-              {errors.age && <span>This field is required</span>}
-            </div>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      minWidth="99vw"
+      bgcolor="#f5f5f5"
+    >
+      <Container>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {page === 1 && (
+            <Container>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Multi-Step Form
+              </Typography>
+              <Typography variant="h6" component="h2" gutterBottom>
+                Page 1
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    label="Age"
+                    {...register("age", { required: true })}
+                    error={!!errors.age}
+                    helperText={errors.age ? "Age is required" : ""}
+                    fullWidth
+                    margin="normal"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl
+                    fullWidth
+                    margin="normal"
+                    error={!!errors.gender}
+                  >
+                    <InputLabel>Gender:</InputLabel>
+                    <Select
+                      {...register("gender", { required: true })}
+                      value={watch("gender") || ""}
+                    >
+                      <MenuItem value="">Select</MenuItem>
+                      <MenuItem value="male">Male</MenuItem>
+                      <MenuItem value="female">Female</MenuItem>
+                    </Select>
+                    {errors.gender && <span>This field is required</span>}
+                  </FormControl>
+                  <Grid>
+                    <img src="/assets/skin-type.png" alt="Skin Type" />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid item xs={12}>
+                      <FormControl
+                        fullWidth
+                        margin="normal"
+                        error={!!errors.skinType}
+                      >
+                        <InputLabel>Skin Type</InputLabel>
+                        <Select
+                          {...register("skinType", { required: true })}
+                          defaultValue=""
+                        >
+                          <MenuItem value="">Select...</MenuItem>
+                          <MenuItem value="Combination Skin">
+                            Combination Skin
+                          </MenuItem>
+                          <MenuItem value="Dry Skin">Dry Skin</MenuItem>
+                          <MenuItem value="Oily Skin">Oily Skin</MenuItem>
+                          <MenuItem value="Normal Skin">Normal Skin</MenuItem>
+                        </Select>
+                        {errors.skinType && <span>This field is required</span>}
+                      </FormControl>
+                    </Grid>
+                    <Grid>
+                      <FormControl
+                        fullWidth
+                        margin="normal"
+                        error={!!errors.dailySunExposure}
+                      >
+                        <InputLabel>Daily Sun Exposure</InputLabel>
+                        <Select
+                          {...register("dailySunExposure", { required: true })}
+                          defaultValue=""
+                        >
+                          <MenuItem value="">Select...</MenuItem>
+                          <MenuItem value="none">None</MenuItem>
+                          <MenuItem value="mild">Mild</MenuItem>
+                          <MenuItem value="moderate">Moderate</MenuItem>
+                          <MenuItem value="severe">Severe</MenuItem>
+                        </Select>
+                        {errors.dailySunExposure && (
+                          <span>This field is required</span>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormControl
+                        component="fieldset"
+                        margin="normal"
+                        error={!!errors.skinHealthIssues}
+                      >
+                        <FormLabel component="legend">
+                          Skin Health Issues
+                        </FormLabel>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues")}
+                                value="acne"
+                              />
+                            }
+                            label="Acne"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues")}
+                                value="redness"
+                              />
+                            }
+                            label="Redness"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues")}
+                                value="wrinkles"
+                              />
+                            }
+                            label="Wrinkles"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues")}
+                                value="pigmentation"
+                              />
+                            }
+                            label="Pigmentation"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues")}
+                                value="dryness"
+                              />
+                            }
+                            label="Dryness"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues")}
+                                value="oiliness"
+                              />
+                            }
+                            label="Oiliness"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                {...register("skinHealthIssues", {
+                                  required: true,
+                                })}
+                                value="none"
+                              />
+                            }
+                            label="None"
+                          />
+                        </FormGroup>
+                        {errors.skinHealthIssues && (
+                          <span>This field is required</span>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    <FormControl
+                      component="fieldset"
+                      margin="normal"
+                      error={!!errors.underEyeIssues}
+                    >
+                      <FormLabel component="legend">Under Eye Issues</FormLabel>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              {...register("underEyeIssues", {
+                                required: true,
+                              })}
+                              value="wrinkles"
+                            />
+                          }
+                          label="Wrinkles"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              {...register("underEyeIssues", {
+                                required: true,
+                              })}
+                              value="milia"
+                            />
+                          }
+                          label="Milia"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              {...register("underEyeIssues", {
+                                required: true,
+                              })}
+                              value="dryness"
+                            />
+                          }
+                          label="Dryness"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              {...register("underEyeIssues", {
+                                required: true,
+                              })}
+                              value="none"
+                            />
+                          }
+                          label="None"
+                        />
+                      </FormGroup>
+                      {errors.underEyeIssues && (
+                        <span>This field is required</span>
+                      )}
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box display="flex" justifyContent="space-between">
+                      <Button variant="contained" color="primary" type="submit">
+                        {page < 3 ? "Next" : "Submit"}
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Container>
+          )}
 
-            {/* Drop-Down Menu Question */}
+          {page === 2 && (
             <div>
-              <label>Gender:</label>
-              <select
-                {...register("gender", { required: true })}
-                value={watch("gender") || ""}
-              >
-                <option value="">Select...</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-              {errors.gender && <span>This field is required</span>}
-            </div>
-            <div>
-              <img src="./src/assets/skin-type.png" alt="Skin Type" />
-            </div>
-            {/* Drop-Down Menu Question */}
-            <div>
-              <label>Skin Type:</label>
-              <select {...register("skinType", { required: true })}>
-                <option value="">Select...</option>
-                <option value="Combination Skin">Combination Skin</option>
-                <option value="Dry Skin">Dry Skin</option>
-                <option value="Oily Skin">Oily Skin</option>
-                <option value="Normal Skin">Normal Skin</option>
-              </select>
-              {errors.skinType && <span>This field is required</span>}
-            </div>
-
-            {/* Drop-Down Menu Question */}
-            <div>
-              <label>Daily Sun Exposure:</label>
-              <select {...register("dailySunExposure", { required: true })}>
-                <option value="">Select...</option>
-                <option value="none">None</option>
-                <option value="mild">Mild</option>
-                <option value="moderate">Moderate</option>
-                <option value="severe">Severe</option>
-              </select>
-              {errors.skinType && <span>This field is required</span>}
-            </div>
-
-            {/* Multiple Choice Question */}
-            <div>
-              <label>Skin Health Issues:</label>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("skinHealthIssues", { required: true })}
-                  value="acne"
-                />
-                <label>acne</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("skinHealthIssues", { required: true })}
-                  value="redness"
-                />
-                <label>redness</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("skinHealthIssues", { required: true })}
-                  value="pigmentation"
-                />
-                <label>pigmentation</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("skinHealthIssues", { required: true })}
-                  value="dryness"
-                />
-                <label>dryness</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("skinHealthIssues", { required: true })}
-                  value="oiliness"
-                />
-                <label>oiliness</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("skinHealthIssues", { required: true })}
-                  value="none"
-                />
-                <label>none</label>
-              </div>
-              {errors.skinHealthIssues && <span>This field is required</span>}
-            </div>
-
-            {/* Multiple Choice Question for Under Eye Issues */}
-            <div>
-              <label>Under Eye Issues:</label>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("underEyeIssues", { required: true })}
-                  value="wrinkles"
-                />
-                <label>wrinkles</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("underEyeIssues", { required: true })}
-                  value="milia"
-                />
-                <label>milia</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("underEyeIssues", { required: true })}
-                  value="dryness"
-                />
-                <label>dryness</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("underEyeIssues", { required: true })}
-                  value="darkCircles"
-                />
-                <label>dark circles</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("underEyeIssues", { required: true })}
-                  value="puffiness"
-                />
-                <label>puffiness</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  {...register("underEyeIssues", { required: true })}
-                  value="none"
-                />
-                <label>none</label>
-              </div>
-              {errors.underEyeIssues && <span>This field is required</span>}
-            </div>
-
-            <button type="submit">Next</button>
-          </div>
-        )}
-
-        {page === 2 && (
-          <div>
-            <h2>Page 2</h2>
-            {/* Conditionally render additional questions for each skin health issue */}
-            {selectedSkinHealthIssues.includes("acne") && (
-              <div>
-                <h3>Describe your acne issues:</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>None</th>
-                      <th>Mild</th>
-                      <th>Moderate</th>
-                      <th>Severe</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
-                      (area) => (
-                        <tr key={area}>
-                          <td>{area}</td>
-                          {["None", "Mild", "Moderate", "Severe"].map(
-                            (severity) => (
-                              <td key={severity}>
-                                <input
-                                  type="radio"
-                                  {...register(
-                                    `acneDetails.${area.toLowerCase()}`,
-                                    { required: true }
-                                  )}
-                                  value={severity}
-                                />
-                              </td>
+              <h2>Page 2</h2>
+              {/* Conditionally render additional questions for each skin health issue */}
+              {selectedSkinHealthIssues.includes("acne") && (
+                <div>
+                  <FormControl component="fieldset" margin="normal">
+                    <FormLabel component="legend">
+                      Describe your acne issues:
+                    </FormLabel>
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>None</TableCell>
+                            <TableCell>Mild</TableCell>
+                            <TableCell>Moderate</TableCell>
+                            <TableCell>Severe</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                            (area) => (
+                              <TableRow key={area}>
+                                <TableCell>{area}</TableCell>
+                                {["None", "Mild", "Moderate", "Severe"].map(
+                                  (severity) => (
+                                    <TableCell key={severity}>
+                                      <Radio
+                                        {...register(
+                                          `acneDetails.${area.toLowerCase()}`,
+                                          { required: true }
+                                        )}
+                                        value={severity}
+                                      />
+                                    </TableCell>
+                                  )
+                                )}
+                              </TableRow>
                             )
                           )}
-                        </tr>
-                      )
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    {errors.acneDetails && (
+                      <span>Please select a severity for each area</span>
                     )}
-                  </tbody>
-                </table>
-                {errors.acneDetails && (
-                  <span>Please select a severity for each area</span>
-                )}
-              </div>
-            )}
+                  </FormControl>
+                </div>
+              )}
 
-            {selectedSkinHealthIssues.includes("redness") && (
-              <div>
-                <h3>Describe your redness issues</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>None</th>
-                      <th>Mild</th>
-                      <th>Moderate</th>
-                      <th>Severe</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
-                      (area) => (
-                        <tr key={area}>
-                          <td>{area}</td>
-                          {["None", "Mild", "Moderate", "Severe"].map(
-                            (severity) => (
-                              <td key={severity}>
-                                <input
-                                  type="radio"
-                                  {...register(
-                                    `rednessDetails.${area.toLowerCase()}`,
-                                    { required: true }
-                                  )}
-                                  value={severity}
-                                />
-                              </td>
+              {selectedSkinHealthIssues.includes("redness") && (
+                <div>
+                  <FormControl component="fieldset" margin="normal">
+                    <FormLabel component="legend">
+                      Describe your redness issues:
+                    </FormLabel>
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>None</TableCell>
+                            <TableCell>Mild</TableCell>
+                            <TableCell>Moderate</TableCell>
+                            <TableCell>Severe</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                            (area) => (
+                              <TableRow key={area}>
+                                <TableCell>{area}</TableCell>
+                                {["None", "Mild", "Moderate", "Severe"].map(
+                                  (severity) => (
+                                    <TableCell key={severity}>
+                                      <Radio
+                                        {...register(
+                                          `rednessDetails.${area.toLowerCase()}`,
+                                          { required: true }
+                                        )}
+                                        value={severity}
+                                      />
+                                    </TableCell>
+                                  )
+                                )}
+                              </TableRow>
                             )
                           )}
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </FormControl>
+                </div>
+              )}
 
-            {selectedSkinHealthIssues.includes("pigmentation") && (
-              <div>
-                <h3>Describe your pigmentation issues</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>None</th>
-                      <th>Mild</th>
-                      <th>Moderate</th>
-                      <th>Severe</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
-                      (area) => (
-                        <tr key={area}>
-                          <td>{area}</td>
-                          {["None", "Mild", "Moderate", "Severe"].map(
-                            (severity) => (
-                              <td key={severity}>
-                                <input
-                                  type="radio"
-                                  {...register(
-                                    `pigmentationDetails.${area.toLowerCase()}`,
-                                    { required: true }
-                                  )}
-                                  value={severity}
-                                />
-                              </td>
+              {selectedSkinHealthIssues.includes("pigmentation") && (
+                <div>
+                  <FormControl component="fieldset" margin="normal">
+                    <FormLabel component="legend">
+                      Describe your pigmentation issues:
+                    </FormLabel>
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>None</TableCell>
+                            <TableCell>Mild</TableCell>
+                            <TableCell>Moderate</TableCell>
+                            <TableCell>Severe</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                            (area) => (
+                              <TableRow key={area}>
+                                <TableCell>{area}</TableCell>
+                                {["None", "Mild", "Moderate", "Severe"].map(
+                                  (severity) => (
+                                    <TableCell key={severity}>
+                                      <Radio
+                                        {...register(
+                                          `pigmentationDetails.${area.toLowerCase()}`,
+                                          { required: true }
+                                        )}
+                                        value={severity}
+                                      />
+                                    </TableCell>
+                                  )
+                                )}
+                              </TableRow>
                             )
                           )}
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </FormControl>
+                </div>
+              )}
 
-            {selectedSkinHealthIssues.includes("dryness") && (
-              <div>
-                <h3>Describe your dryness issues:</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>None</th>
-                      <th>Mild</th>
-                      <th>Moderate</th>
-                      <th>Severe</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
-                      (area) => (
-                        <tr key={area}>
-                          <td>{area}</td>
-                          {["None", "Mild", "Moderate", "Severe"].map(
-                            (severity) => (
-                              <td key={severity}>
-                                <input
-                                  type="radio"
-                                  {...register(
-                                    `drynessDetails.${area.toLowerCase()}`,
-                                    { required: true }
-                                  )}
-                                  value={severity}
-                                />
-                              </td>
+              {selectedSkinHealthIssues.includes("dryness") && (
+                <div>
+                  <FormControl component="fieldset" margin="normal">
+                    <FormLabel component="legend">
+                      Describe your dryness issues:
+                    </FormLabel>
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>None</TableCell>
+                            <TableCell>Mild</TableCell>
+                            <TableCell>Moderate</TableCell>
+                            <TableCell>Severe</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                            (area) => (
+                              <TableRow key={area}>
+                                <TableCell>{area}</TableCell>
+                                {["None", "Mild", "Moderate", "Severe"].map(
+                                  (severity) => (
+                                    <TableCell key={severity}>
+                                      <Radio
+                                        {...register(
+                                          `drynessDetails.${area.toLowerCase()}`,
+                                          { required: true }
+                                        )}
+                                        value={severity}
+                                      />
+                                    </TableCell>
+                                  )
+                                )}
+                              </TableRow>
                             )
                           )}
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </FormControl>
+                </div>
+              )}
 
-            {selectedSkinHealthIssues.includes("oiliness") && (
-              <div>
-                <h3>Describe your oiliness issues:</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>None</th>
-                      <th>Mild</th>
-                      <th>Moderate</th>
-                      <th>Severe</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
-                      (area) => (
-                        <tr key={area}>
-                          <td>{area}</td>
-                          {["None", "Mild", "Moderate", "Severe"].map(
-                            (severity) => (
-                              <td key={severity}>
-                                <input
-                                  type="radio"
-                                  {...register(
-                                    `oilinessDetails.${area.toLowerCase()}`,
-                                    { required: true }
-                                  )}
-                                  value={severity}
-                                />
-                              </td>
+              {selectedSkinHealthIssues.includes("oiliness") && (
+                <div>
+                  <FormControl component="fieldset" margin="normal">
+                    <FormLabel component="legend">
+                      Describe your oiliness issues:
+                    </FormLabel>
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>None</TableCell>
+                            <TableCell>Mild</TableCell>
+                            <TableCell>Moderate</TableCell>
+                            <TableCell>Severe</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {["Forehead", "Chin", "Cheeks", "Jaw", "Nose"].map(
+                            (area) => (
+                              <TableRow key={area}>
+                                <TableCell>{area}</TableCell>
+                                {["None", "Mild", "Moderate", "Severe"].map(
+                                  (severity) => (
+                                    <TableCell key={severity}>
+                                      <Radio
+                                        {...register(
+                                          `oilinessDetails.${area.toLowerCase()}`,
+                                          { required: true }
+                                        )}
+                                        value={severity}
+                                      />
+                                    </TableCell>
+                                  )
+                                )}
+                              </TableRow>
                             )
                           )}
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </FormControl>
+                </div>
+              )}
 
-            {/* Submit Button */}
-            <button type="submit">Next</button>
-            <button type="button" onClick={handlePrevious}>
-              Previous
-            </button>
-          </div>
-        )}
-        {page === 3 && (
-          <div>
-            <h2>Page 3</h2>
-
-{/*             <div>
-              <label>Full face close up selfie:</label>
-              <input type="file" {...register("image", { required: true })} />
-              {errors.image && <span>This field is required</span>}
+              <Box display="flex" justifyContent="space-between">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handlePrevious}
+                >
+                  Previous
+                </Button>
+                <Button variant="contained" color="primary" type="submit">
+                  {page < 3 ? "Next" : "Submit"}
+                </Button>
+              </Box>
             </div>
-
-            <p>Upload high quality close-ups from different segments</p>
-            <div>
-              <label>Forehead:</label>
-              <input type="file" {...register("image", { required: true })} />
-              {errors.image && <span>This field is required</span>}
-            </div>
-
-            <div>
-              <label>Chin:</label>
-              <input type="file" {...register("image", { required: true })} />
-              {errors.image && <span>This field is required</span>}
-            </div>
-
-            <div>
-              <label>Left Cheeks:</label>
-              <input type="file" {...register("image", { required: true })} />
-              {errors.image && <span>This field is required</span>}
-            </div>
-
-            <div>
-              <label>Right Cheeks:</label>
-              <input type="file" {...register("image", { required: true })} />
-              {errors.image && <span>This field is required</span>}
-            </div>
-             */}
-            <button type="button" onClick={handlePrevious}>
-              Previous
-            </button>
-            <button type="submit">Submit</button>
-          </div>
-        )}
-      </form>
-    </div>
+          )}
+          {page === 3 && (
+            <Grid container spacing={3}>
+              {/* <Grid item xs={12}>
+                <Typography variant="h6">Upload Images</Typography>
+                <input
+                  type="file"
+                  {...register("images", { required: true })}
+                  multiple
+                />
+                {errors.images && <span>This field is required</span>}
+              </Grid> */}
+              <Grid item xs={12}>
+                <Box display="flex" justifyContent="space-between">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handlePrevious}
+                  >
+                    Previous
+                  </Button>
+                  <Button variant="contained" color="primary" type="submit">
+                    Submit
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </form>
+      </Container>
+    </Box>
   );
 }
 
