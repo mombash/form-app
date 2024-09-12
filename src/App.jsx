@@ -36,7 +36,15 @@ function App() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: "",
+      age: "",
+      gender: "",
+      skinType: "",
+      skinHealthIssues: [],
+    },
+  });
   const [page, setPage] = useState(1); // State to track the current page
   const selectedSkinHealthIssues = watch("skinHealthIssues", []);
 
@@ -172,9 +180,17 @@ function App() {
                 <Grid item xs={12}>
                   <TextField
                     label="Age"
-                    {...register("age", { required: true })}
+                    {...register("age", {
+                      required: true,
+                      pattern: /^[0-9]+$/,
+                      validate: (value) => parseInt(value) > 0,
+                    })}
                     error={!!errors.age}
-                    helperText={errors.age ? "Age is required" : ""}
+                    helperText={
+                      errors.age
+                        ? "Please enter a valid age (whole number)"
+                        : ""
+                    }
                     fullWidth
                     margin="normal"
                   />
@@ -209,7 +225,7 @@ function App() {
                         <InputLabel>Skin Type</InputLabel>
                         <Select
                           {...register("skinType", { required: true })}
-                          defaultValue=""
+                          value={watch("skinType") || ""}
                         >
                           <MenuItem value="">Select...</MenuItem>
                           <MenuItem value="Combination Skin">
@@ -231,7 +247,7 @@ function App() {
                         <InputLabel>Daily Sun Exposure</InputLabel>
                         <Select
                           {...register("dailySunExposure", { required: true })}
-                          defaultValue=""
+                          value={watch("dailySunExposure") || ""}
                         >
                           <MenuItem value="">Select...</MenuItem>
                           <MenuItem value="none">None</MenuItem>
@@ -259,6 +275,10 @@ function App() {
                               <Checkbox
                                 {...register("skinHealthIssues")}
                                 value="acne"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes("acne")
+                                }
                               />
                             }
                             label="Acne"
@@ -268,6 +288,10 @@ function App() {
                               <Checkbox
                                 {...register("skinHealthIssues")}
                                 value="redness"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes("redness")
+                                }
                               />
                             }
                             label="Redness"
@@ -277,6 +301,10 @@ function App() {
                               <Checkbox
                                 {...register("skinHealthIssues")}
                                 value="wrinkles"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes("wrinkles")
+                                }
                               />
                             }
                             label="Wrinkles"
@@ -286,6 +314,12 @@ function App() {
                               <Checkbox
                                 {...register("skinHealthIssues")}
                                 value="pigmentation"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes(
+                                    "pigmentation"
+                                  )
+                                }
                               />
                             }
                             label="Pigmentation"
@@ -295,6 +329,10 @@ function App() {
                               <Checkbox
                                 {...register("skinHealthIssues")}
                                 value="dryness"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes("dryness")
+                                }
                               />
                             }
                             label="Dryness"
@@ -304,6 +342,10 @@ function App() {
                               <Checkbox
                                 {...register("skinHealthIssues")}
                                 value="oiliness"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes("oiliness")
+                                }
                               />
                             }
                             label="Oiliness"
@@ -315,6 +357,10 @@ function App() {
                                   required: true,
                                 })}
                                 value="none"
+                                checked={
+                                  Array.isArray(watch("skinHealthIssues")) &&
+                                  watch("skinHealthIssues").includes("none")
+                                }
                               />
                             }
                             label="None"
@@ -339,6 +385,10 @@ function App() {
                                 required: true,
                               })}
                               value="wrinkles"
+                              checked={
+                                Array.isArray(watch("underEyeIssues")) &&
+                                watch("underEyeIssues").includes("wrinkles")
+                              }
                             />
                           }
                           label="Wrinkles"
@@ -350,6 +400,10 @@ function App() {
                                 required: true,
                               })}
                               value="milia"
+                              checked={
+                                Array.isArray(watch("underEyeIssues")) &&
+                                watch("underEyeIssues").includes("milia")
+                              }
                             />
                           }
                           label="Milia"
@@ -361,6 +415,10 @@ function App() {
                                 required: true,
                               })}
                               value="dryness"
+                              checked={
+                                Array.isArray(watch("underEyeIssues")) &&
+                                watch("underEyeIssues").includes("dryness")
+                              }
                             />
                           }
                           label="Dryness"
@@ -372,6 +430,10 @@ function App() {
                                 required: true,
                               })}
                               value="none"
+                              checked={
+                                Array.isArray(watch("underEyeIssues")) &&
+                                watch("underEyeIssues").includes("none")
+                              }
                             />
                           }
                           label="None"
@@ -429,6 +491,12 @@ function App() {
                                           { required: true }
                                         )}
                                         value={severity}
+                                        name={`acneDetails.${area.toLowerCase()}`}
+                                        checked={
+                                          watch(
+                                            `acneDetails.${area.toLowerCase()}`
+                                          ) === severity
+                                        }
                                       />
                                     </TableCell>
                                   )
